@@ -1,0 +1,548 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Dexcom Developer API",
+    "version": "v3"
+  },
+  "servers": [
+    {
+      "url": "https://api.dexcom.com"
+    }
+  ],
+  "security": [
+    {
+      "BearerAuth": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "oauth2"
+      }
+    },
+    "schemas": {
+      "DataRangeMoment": {
+        "type": "object",
+        "properties": {
+          "systemTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "displayTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "systemTime",
+          "displayTime"
+        ]
+      },
+      "DateTime": {
+        "type": "string",
+        "format": "date-time"
+      },
+      "AlertRecord": {
+        "type": "object",
+        "properties": {
+          "recordId": {
+            "type": "string"
+          },
+          "systemTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "displayTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "alertName": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "high",
+              "low",
+              "rise",
+              "fall",
+              "outOfRange",
+              "urgentLow",
+              "urgentLowSoon",
+              "noReadings",
+              "fixedLow"
+            ]
+          },
+          "alertState": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "inactive",
+              "activeSnoozed",
+              "activeAlarming"
+            ]
+          },
+          "displayDevice": {
+            "type": "string"
+          },
+          "transmitterGeneration": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "g4",
+              "g5",
+              "g6",
+              "g6+",
+              "dexcomPro",
+              "g7"
+            ]
+          },
+          "transmitterId": {
+            "type": "string"
+          }
+        }
+      },
+      "CalibrationRecord": {
+        "type": "object",
+        "properties": {
+          "recordId": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "mg/dL",
+              "mmol/L"
+            ]
+          },
+          "systemTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "displayTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "displayDevice": {
+            "type": "string"
+          },
+          "transmitterId": {
+            "type": "string"
+          },
+          "transmitterTicks": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "transmitterGeneration": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "g4",
+              "g5",
+              "g6",
+              "g6+",
+              "dexcomPro",
+              "g7"
+            ]
+          }
+        }
+      },
+      "EGVRecord": {
+        "type": "object",
+        "properties": {
+          "recordId": {
+            "type": "string"
+          },
+          "systemTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "displayTime": {
+            "$ref": "#/components/schemas/DateTime"
+          },
+          "transmitterId": {
+            "type": "string"
+          },
+          "transmitterTicks": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "value": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "high",
+              "low",
+              "ok"
+            ]
+          },
+          "trend": {
+            "type": "string",
+            "enum": [
+              "none",
+              "unknown",
+              "doubleUp",
+              "singleUp",
+              "fortyFiveUp",
+              "flat",
+              "fortyFiveDown",
+              "singleDown",
+              "doubleDown",
+              "notComputable",
+              "rateOutOfRange"
+            ]
+          },
+          "trendRate": {
+            "type": "number",
+            "format": "double"
+          },
+          "unit": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "mg/dL",
+              "mmol/L"
+            ]
+          },
+          "rateUnit": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "mg/dL/min",
+              "mmol/L/min"
+            ]
+          },
+          "displayDevice": {
+            "type": "string"
+          },
+          "transmitterGeneration": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "g4",
+              "g5",
+              "g6",
+              "g6+",
+              "dexcomPro",
+              "g7"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/v3/users/self/dataRange": {
+      "get": {
+        "operationId": "getDataRange",
+        "parameters": [
+          {
+            "name": "lastSyncTime",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Data range retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "recordType": {
+                      "type": "string"
+                    },
+                    "recordVersion": {
+                      "type": "string"
+                    },
+                    "userId": {
+                      "type": "string"
+                    },
+                    "calibrations": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "$ref": "#/components/schemas/DataRangeMoment"
+                        },
+                        "end": {
+                          "$ref": "#/components/schemas/DataRangeMoment"
+                        }
+                      }
+                    },
+                    "egvs": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "$ref": "#/components/schemas/DataRangeMoment"
+                        },
+                        "end": {
+                          "$ref": "#/components/schemas/DataRangeMoment"
+                        }
+                      }
+                    },
+                    "events": {
+                      "type": "object",
+                      "properties": {
+                        "start": {
+                          "$ref": "#/components/schemas/DataRangeMoment"
+                        },
+                        "end": {
+                          "$ref": "#/components/schemas/DataRangeMoment"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/oauth2/login": {
+      "get": {
+        "operationId": "userAuthorization",
+        "parameters": [
+          {
+            "name": "client_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "redirect_uri",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "response_type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "code"
+              ]
+            }
+          },
+          {
+            "name": "scope",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "offline_access"
+              ]
+            }
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to authorization code or access denied error",
+            "headers": {
+              "Location": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v2/oauth2/token": {
+      "post": {
+        "operationId": "exchangeAuthorizationCode",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "client_id": {
+                    "type": "string"
+                  },
+                  "client_secret": {
+                    "type": "string"
+                  },
+                  "code": {
+                    "type": "string"
+                  },
+                  "grant_type": {
+                    "type": "string",
+                    "enum": [
+                      "authorization_code"
+                    ]
+                  },
+                  "redirect_uri": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "client_id",
+                  "client_secret",
+                  "code",
+                  "grant_type",
+                  "redirect_uri"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Access token and refresh token returned",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "expires_in": {
+                      "type": "integer"
+                    },
+                    "token_type": {
+                      "type": "string"
+                    },
+                    "refresh_token": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/users/self/alerts": {
+      "get": {
+        "operationId": "getAlerts",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlertRecord"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/users/self/calibrations": {
+      "get": {
+        "operationId": "getCalibrations",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalibrationRecord"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/users/self/egvs": {
+      "get": {
+        "operationId": "getEstimatedGlucoseValues",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EGVRecord"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
