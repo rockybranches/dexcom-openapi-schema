@@ -2,7 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "Dexcom Developer API",
-    "version": "v3"
+    "version": "v3",
+    "description": "This API provides access to Dexcom continuous glucose monitoring data for authorized users."
   },
   "servers": [
     {
@@ -17,7 +18,9 @@
   "components": {
     "securitySchemes": {
       "BearerAuth": {
-        "type": "oauth2"
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
       }
     },
     "schemas": {
@@ -537,6 +540,84 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/EGVRecord"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/users/self/events": {
+      "get": {
+        "operationId": "getEventsV3",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DateTime"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "eventId": { "type": "string" },
+                      "eventType": { "type": "string" },
+                      "systemTime": { "$ref": "#/components/schemas/DateTime" },
+                      "displayTime": { "$ref": "#/components/schemas/DateTime" },
+                      "value": { "type": ["string", "number", "null"] },
+                      "unit": { "type": ["string", "null"] },
+                      "transmitterId": { "type": ["string", "null"] },
+                      "transmitterGeneration": { "type": ["string", "null"] },
+                      "displayDevice": { "type": ["string", "null"] }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v3/users/self/devices": {
+      "get": {
+        "operationId": "getDevicesV3",
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "deviceId": { "type": "string" },
+                      "deviceType": { "type": "string" },
+                      "transmitterGeneration": { "type": ["string", "null"] },
+                      "transmitterId": { "type": ["string", "null"] },
+                      "displayDevice": { "type": ["string", "null"] },
+                      "activationDate": { "$ref": "#/components/schemas/DateTime" },
+                      "deactivationDate": { "$ref": "#/components/schemas/DateTime" }
+                    }
+                  }
                 }
               }
             }
